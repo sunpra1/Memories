@@ -21,7 +21,7 @@ object Provider {
     private val retrofit: Retrofit =
         Retrofit.Builder()
             .client(okHttpClient)
-            .baseUrl("https://sunilprasai.com.np/api")
+            .baseUrl("https://sunilprasai.com.np/api/")
             .addConverterFactory(GsonConverterFactory.create())
             .build()
 
