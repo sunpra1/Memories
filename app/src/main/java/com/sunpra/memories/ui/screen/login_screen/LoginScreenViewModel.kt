@@ -8,7 +8,6 @@ import com.google.gson.reflect.TypeToken
 import com.sunpra.memories.data.json.AuthErrorBody
 import com.sunpra.memories.data.json.LoginBody
 import com.sunpra.memories.data.json.LoginResponse
-import com.sunpra.memories.utility.AppStorage
 import com.sunpra.memories.utility.Provider
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -57,14 +56,12 @@ class LoginScreenViewModel : ViewModel() {
     fun onLoginClicked() {
         if (validate()) {
             val loginBody = LoginBody(
-                email = uiState.value.email,
-                password = uiState.value.password
+                email = uiState.value.email, password = uiState.value.password
             )
             viewModelScope.launch {
-                val response: Response<LoginResponse> =
-                    withContext(Dispatchers.IO) {
-                        Provider.restService.login(loginBody)
-                    }
+                val response: Response<LoginResponse> = withContext(Dispatchers.IO) {
+                    Provider.restService.login(loginBody)
+                }
 
                 if (response.isSuccessful) {
                     _loginSuccess.emit(response.body())
@@ -72,11 +69,10 @@ class LoginScreenViewModel : ViewModel() {
                     val stringError: String? = response.errorBody()?.string()
                     if (stringError != null) {
                         Log.d("TAG", "stringError: $stringError")
-                        val authErrorBody: AuthErrorBody? =
-                            Gson().fromJson<AuthErrorBody>(
-                                stringError,
-                                object : TypeToken<AuthErrorBody>() {}.type,
-                            )
+                        val authErrorBody: AuthErrorBody? = Gson().fromJson<AuthErrorBody>(
+                            stringError,
+                            object : TypeToken<AuthErrorBody>() {}.type,
+                        )
                         if (authErrorBody?.message != null) {
                             _dialogMessage.emit(authErrorBody.message)
                         }
