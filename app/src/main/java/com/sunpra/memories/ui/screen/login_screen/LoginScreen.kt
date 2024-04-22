@@ -1,5 +1,6 @@
-package com.sunpra.memories.ui.screen
+package com.sunpra.memories.ui.screen.login_screen
 
+import android.content.Context
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
@@ -22,10 +23,12 @@ import androidx.compose.material3.TextField
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
@@ -38,16 +41,30 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.DialogProperties
 import com.sunpra.memories.R
 import com.sunpra.memories.ui.theme.MemoriesTheme
+import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.rememberNavController
+import com.sunpra.memories.utility.AppStorage
 
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun LoginScreen(
-    viewModel: LoginScreenViewModel = androidx.lifecycle.viewmodel.compose.viewModel()
+    navController: NavHostController,
+    viewModel: LoginScreenViewModel = viewModel(),
+    context: Context = LocalContext.current
 ) {
 
     val uiState by viewModel.uiState.collectAsState()
     val dialogMessage by viewModel.dialogMessage.collectAsState(null)
+    val onLoginSuccess by viewModel.loginSuccess.collectAsState(null)
+
+    LaunchedEffect(onLoginSuccess) {
+        if(onLoginSuccess != null){
+            AppStorage(context).token = onLoginSuccess?.token
+            navController.navigate("/memoriesScreen")
+        }
+    }
 
     Scaffold(
         topBar = {
@@ -182,6 +199,6 @@ fun LoginScreen(
 @Composable
 fun PreviewLoginScreen() {
     MemoriesTheme {
-        LoginScreen()
+        LoginScreen(rememberNavController())
     }
 }

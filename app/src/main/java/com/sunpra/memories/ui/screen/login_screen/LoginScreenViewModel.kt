@@ -1,4 +1,4 @@
-package com.sunpra.memories.ui.screen
+package com.sunpra.memories.ui.screen.login_screen
 
 import android.util.Log
 import androidx.lifecycle.ViewModel
@@ -8,6 +8,7 @@ import com.google.gson.reflect.TypeToken
 import com.sunpra.memories.data.json.AuthErrorBody
 import com.sunpra.memories.data.json.LoginBody
 import com.sunpra.memories.data.json.LoginResponse
+import com.sunpra.memories.utility.AppStorage
 import com.sunpra.memories.utility.Provider
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -25,6 +26,9 @@ class LoginScreenViewModel : ViewModel() {
 
     private val _dialogMessage = MutableSharedFlow<String?>()
     val dialogMessage = _dialogMessage.asSharedFlow()
+
+    private val _loginSuccess = MutableSharedFlow<LoginResponse?>()
+    val loginSuccess = _loginSuccess.asSharedFlow()
 
     fun onEmailChanged(value: String) {
         _uiState.update { currentState ->
@@ -63,7 +67,7 @@ class LoginScreenViewModel : ViewModel() {
                     }
 
                 if (response.isSuccessful) {
-                    Log.d("LOGIN SUCCESS", response.toString())
+                    _loginSuccess.emit(response.body())
                 } else {
                     val stringError: String? = response.errorBody()?.string()
                     if (stringError != null) {
@@ -90,7 +94,7 @@ class LoginScreenViewModel : ViewModel() {
         }
     }
 
-    fun onDismissClicked(){
+    fun onDismissClicked() {
         viewModelScope.launch {
             _dialogMessage.emit(null)
         }

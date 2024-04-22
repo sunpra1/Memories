@@ -3,7 +3,7 @@ package com.sunpra.memories
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import com.sunpra.memories.ui.screen.LoginScreen
+import com.sunpra.memories.ui.navigation.AppNavigation
 import com.sunpra.memories.ui.theme.MemoriesTheme
 
 class MainActivity : ComponentActivity() {
@@ -11,7 +11,7 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             MemoriesTheme {
-                LoginScreen()
+                AppNavigation()
             }
         }
     }
