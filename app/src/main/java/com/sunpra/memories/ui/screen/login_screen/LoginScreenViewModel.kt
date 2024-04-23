@@ -1,6 +1,8 @@
 package com.sunpra.memories.ui.screen.login_screen
 
+import android.app.Application
 import android.util.Log
+import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.gson.Gson
@@ -8,6 +10,7 @@ import com.google.gson.reflect.TypeToken
 import com.sunpra.memories.data.json.AuthErrorBody
 import com.sunpra.memories.data.json.LoginBody
 import com.sunpra.memories.data.json.LoginResponse
+import com.sunpra.memories.utility.AppStorage
 import com.sunpra.memories.utility.Provider
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -19,7 +22,9 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import retrofit2.Response
 
-class LoginScreenViewModel : ViewModel() {
+class LoginScreenViewModel(context: Application) : AndroidViewModel(context) {
+    private val appStorage = AppStorage(context)
+
     private val _uiState = MutableStateFlow(LoginScreenUiState())
     val uiState = _uiState.asStateFlow()
 
@@ -59,32 +64,38 @@ class LoginScreenViewModel : ViewModel() {
                 email = uiState.value.email, password = uiState.value.password
             )
             viewModelScope.launch {
-                val response: Response<LoginResponse> = withContext(Dispatchers.IO) {
-                    Provider.restService.login(loginBody)
-                }
+                try {
+                    val response: Response<LoginResponse> = withContext(Dispatchers.IO) {
+                        Provider.restService.login(loginBody)
+                    }
 
-                if (response.isSuccessful) {
-                    _loginSuccess.emit(response.body())
-                } else {
-                    val stringError: String? = response.errorBody()?.string()
-                    if (stringError != null) {
-                        Log.d("TAG", "stringError: $stringError")
-                        val authErrorBody: AuthErrorBody? = Gson().fromJson<AuthErrorBody>(
-                            stringError,
-                            object : TypeToken<AuthErrorBody>() {}.type,
-                        )
-                        if (authErrorBody?.message != null) {
-                            _dialogMessage.emit(authErrorBody.message)
-                        }
-                        if (authErrorBody?.email != null) {
-                            _uiState.update { currentState ->
-                                currentState.copy(
-                                    emailError = authErrorBody.email.joinToString(" ")
-                                )
+                    if (response.isSuccessful) {
+                        val loginResponse = response.body()
+                        appStorage.token = loginResponse?.token
+                        _loginSuccess.emit(loginResponse)
+                    } else {
+                        val stringError: String? = response.errorBody()?.string()
+                        if (stringError != null) {
+                            Log.d("TAG", "stringError: $stringError")
+                            val authErrorBody: AuthErrorBody? = Gson().fromJson<AuthErrorBody>(
+                                stringError,
+                                object : TypeToken<AuthErrorBody>() {}.type,
+                            )
+                            if (authErrorBody?.message != null) {
+                                _dialogMessage.emit(authErrorBody.message)
+                            }
+                            if (authErrorBody?.email != null) {
+                                _uiState.update { currentState ->
+                                    currentState.copy(
+                                        emailError = authErrorBody.email.joinToString(" ")
+                                    )
+                                }
                             }
                         }
+                        //{"message":"Invalid credentials provided."}
                     }
-                    //{"message":"Invalid credentials provided."}
+                }catch (e: Exception){
+                    _dialogMessage.emit("Something went wrong, please try again later.")
                 }
             }
         }

@@ -61,7 +61,6 @@ fun LoginScreen(
 
     LaunchedEffect(onLoginSuccess) {
         if(onLoginSuccess != null){
-            AppStorage(context).token = onLoginSuccess?.token
             navController.navigate("/memoriesScreen")
         }
     }

@@ -75,6 +75,7 @@ dependencies {
     implementation("com.squareup.okhttp3:logging-interceptor:4.12.0")
     val navVersion = "2.7.7"
     implementation("androidx.navigation:navigation-compose:$navVersion")
+    implementation("io.coil-kt:coil-compose:2.6.0")
     //endregion
 
 }
