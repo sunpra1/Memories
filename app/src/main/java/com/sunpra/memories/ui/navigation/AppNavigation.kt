@@ -7,6 +7,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.sunpra.memories.ui.screen.add_memory_screen.AddMemoryScreen
 import com.sunpra.memories.ui.screen.login_screen.LoginScreen
 import com.sunpra.memories.ui.screen.memories_screen.MemoriesScreen
 import com.sunpra.memories.utility.AppStorage
@@ -27,6 +28,9 @@ fun AppNavigation(
         }
         composable(route = "/memoriesScreen") {
             MemoriesScreen(navController)
+        }
+        composable(route = "/addMemory") {
+            AddMemoryScreen(navController)
         }
     }
 }
