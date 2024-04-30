@@ -12,11 +12,16 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.DialogProperties
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
+import androidx.lifecycle.LifecycleOwner
 import androidx.navigation.NavHostController
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.sunpra.memories.ui.composable.MemoryUi
@@ -25,11 +30,26 @@ import com.sunpra.memories.ui.composable.MemoryUi
 fun MemoriesScreen(
     navHostController: NavHostController,
     navigateToAddMemoryScreen: () -> Unit = { navHostController.navigate("/addMemory") },
+    lifecycleOwner : LifecycleOwner = LocalLifecycleOwner.current,
     viewModel: MemoriesScreenViewModel = viewModel()
 ) {
     val dialogMessage by viewModel.dialogMessage.collectAsState(null)
 
     val uiState by viewModel.uiState.collectAsState()
+
+    DisposableEffect(Unit) {
+
+        val observer = LifecycleEventObserver{ owner, event ->
+            if(event == Lifecycle.Event.ON_RESUME){
+                viewModel.getMemories()
+            }
+        }
+        lifecycleOwner.lifecycle.addObserver(observer)
+
+        onDispose {
+            lifecycleOwner.lifecycle.removeObserver(observer)
+        }
+    }
 
     Scaffold(
         floatingActionButton = {

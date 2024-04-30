@@ -3,10 +3,10 @@ package com.sunpra.memories.ui.screen.login_screen
 import android.app.Application
 import android.util.Log
 import androidx.lifecycle.AndroidViewModel
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
+import com.sunpra.memories.data.database.AppDatabase
 import com.sunpra.memories.data.json.AuthErrorBody
 import com.sunpra.memories.data.json.LoginBody
 import com.sunpra.memories.data.json.LoginResponse
@@ -24,6 +24,8 @@ import retrofit2.Response
 
 class LoginScreenViewModel(context: Application) : AndroidViewModel(context) {
     private val appStorage = AppStorage(context)
+
+    private val appDatabase = AppDatabase.getInstance(context)
 
     private val _uiState = MutableStateFlow(LoginScreenUiState())
     val uiState = _uiState.asStateFlow()
@@ -72,6 +74,10 @@ class LoginScreenViewModel(context: Application) : AndroidViewModel(context) {
                     if (response.isSuccessful) {
                         val loginResponse = response.body()
                         appStorage.token = loginResponse?.token
+                        loginResponse?.user?.let {
+                            appDatabase.getUserDao()
+                                .insert(it.apply { token = loginResponse.token })
+                        }
                         _loginSuccess.emit(loginResponse)
                     } else {
                         val stringError: String? = response.errorBody()?.string()
@@ -94,7 +100,7 @@ class LoginScreenViewModel(context: Application) : AndroidViewModel(context) {
                         }
                         //{"message":"Invalid credentials provided."}
                     }
-                }catch (e: Exception){
+                } catch (e: Exception) {
                     _dialogMessage.emit("Something went wrong, please try again later.")
                 }
             }

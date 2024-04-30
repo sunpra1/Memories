@@ -68,7 +68,7 @@ class AddMemoryScreenViewModel(context: Application) : AndroidViewModel(context)
                         image = checkNotNull(contentResolver.openInputStream(checkNotNull(_uiState.value.image)))
                     )
                     val response = Provider.restService.addMemory(
-                        token = token,
+                        token = "Bearer $token",
                         body = addMemoryBody.asMultipartBody()
                     )
                     if(response.isSuccessful){

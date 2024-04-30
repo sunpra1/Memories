@@ -1,6 +1,7 @@
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
+    id("kotlin-kapt") //Used for room database
 }
 
 android {
@@ -76,6 +77,11 @@ dependencies {
     val navVersion = "2.7.7"
     implementation("androidx.navigation:navigation-compose:$navVersion")
     implementation("io.coil-kt:coil-compose:2.6.0")
+
+    val roomVersion = "2.6.1"
+    implementation("androidx.room:room-runtime:$roomVersion")
+    kapt("androidx.room:room-compiler:$roomVersion")
+    implementation("androidx.room:room-ktx:$roomVersion")
     //endregion
 
 }

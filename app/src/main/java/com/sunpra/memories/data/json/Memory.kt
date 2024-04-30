@@ -1,8 +1,29 @@
 package com.sunpra.memories.data.json
 
+import androidx.room.ColumnInfo
+import androidx.room.Entity
+import androidx.room.ForeignKey
+import androidx.room.Index
+import androidx.room.PrimaryKey
 import com.google.gson.annotations.SerializedName
 
+@Entity(
+    tableName = "memory",
+    indices = [
+        Index(value = ["id"], unique = true),
+        Index(value = ["user_id"], unique = false)
+    ],
+    foreignKeys = [
+        ForeignKey(
+            entity = User::class,
+            parentColumns = ["id"],
+            childColumns = ["user_id"],
+            onDelete = ForeignKey.CASCADE
+        )
+    ]
+)
 data class Memory(
+    @PrimaryKey
     val id: Int,
     val title: String,
     val description: String,
@@ -10,9 +31,13 @@ data class Memory(
     val lng: String,
     val image: String,
     @SerializedName("created_at")
+    @ColumnInfo("created_at")
     val createdAt: String,
     @SerializedName("updated_at")
-    val updatedAt: String
+    @ColumnInfo("updated_at")
+    val updatedAt: String,
+    @ColumnInfo("user_id")
+    val userId: Int?
 )
 //{
 //        "id": 1,

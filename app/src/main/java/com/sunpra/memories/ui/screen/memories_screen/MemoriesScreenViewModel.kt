@@ -25,16 +25,13 @@ class MemoriesScreenViewModel(context: Application) : AndroidViewModel(context) 
 
     private val _dialogMessage = MutableSharedFlow<String?>()
     val dialogMessage = _dialogMessage.asSharedFlow()
-    init {
-        getMemories()
-    }
 
     fun onDismissClicked() {
         viewModelScope.launch {
             _dialogMessage.emit(null)
         }
     }
-    private fun getMemories() {
+    fun getMemories() {
         viewModelScope.launch {
             try {
                 val restService: RestService = Provider.restService
