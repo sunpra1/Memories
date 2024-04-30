@@ -6,11 +6,12 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 import com.sunpra.memories.data.database.dao.MemoryDao
 import com.sunpra.memories.data.database.dao.UserDao
+import com.sunpra.memories.data.json.Memory
 import com.sunpra.memories.data.json.User
 
 @Database(
     version = 1,
-    entities = [User::class],
+    entities = [User::class, Memory::class],
     exportSchema = false
 )
 abstract class AppDatabase : RoomDatabase() {

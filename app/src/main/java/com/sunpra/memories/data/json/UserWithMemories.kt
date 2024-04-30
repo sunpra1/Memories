@@ -8,9 +8,9 @@ data class UserWithMemories(
     @Embedded()
     val user: User,
     @Relation(
+        entity = Memory::class,
         parentColumn = "id",
-        entityColumn = "user_id",
-        entity = Memory::class
+        entityColumn = "user_id"
     )
     val memories: List<Memory>
 )

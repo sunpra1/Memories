@@ -37,7 +37,7 @@ data class Memory(
     @ColumnInfo("updated_at")
     val updatedAt: String,
     @ColumnInfo("user_id")
-    val userId: Int?
+    var userId: Int?
 )
 //{
 //        "id": 1,
